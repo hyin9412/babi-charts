@@ -1,0 +1,28 @@
+[class*="line_tooltip_wrapper"] .key-box,
+[class*="line_tooltip_wrapper"] .value-box,
+[class*="pie_tooltip_wrapper"] .key-box,
+[class*="pie_tooltip_wrapper"] .value-box {
+  display: inline-flex !important;
+  align-items: center !important;
+  min-height: 21px !important;
+  line-height: 1 !important;
+}
+
+[class*="line_tooltip_wrapper"] .key,
+[class*="pie_tooltip_wrapper"] .key {
+  display: inline-flex !important;
+  align-items: center !important;
+}
+
+[class*="line_tooltip_wrapper"] .key-box > *,
+[class*="pie_tooltip_wrapper"] .key-box > * {
+  flex: 0 0 auto !important;
+}
+
+[class*="line_tooltip_wrapper"] .key-box svg,
+[class*="line_tooltip_wrapper"] .key-box canvas,
+[class*="pie_tooltip_wrapper"] .key-box svg,
+[class*="pie_tooltip_wrapper"] .key-box canvas {
+  display: block !important;
+  flex: 0 0 auto !important;
+}

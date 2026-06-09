@@ -1,0 +1,393 @@
+* {
+  box-sizing: border-box;
+}
+
+.instance6 {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  outline-width: 1px;
+  outline-style: solid;
+  outline-color: var(--Line-color-border-2, #eaedf1);
+  border-radius: 4px;
+  background: #ffffff;
+  width: 558px;
+  height: 300px;
+
+  .aComponentHeader {
+    display: flex;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+    align-content: center;
+    align-items: center;
+    align-self: stretch;
+    justify-content: space-between;
+    border-radius: 8px;
+    background: var(--Background-color-bg-1, #ffffff);
+    padding: 16px;
+    min-width: 250px;
+    row-gap: 12px;
+
+    .text {
+      flex-shrink: 0;
+      line-height: 22px;
+      letter-spacing: 0.04px;
+      color: var(--Text-color-text-1, #0c0d0e);
+      font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .aComponentsActionGro {
+      display: inline-flex;
+      flex-shrink: 0;
+      align-items: flex-start;
+      column-gap: 1px;
+      border-radius: 4px;
+      box-shadow: var(
+        --shadow-Assembly-Button-Gray-Default-Disabled,
+        0px 0px 0px 1px #dde2e9,
+        0px 2px 1px 0px #00000014
+      );
+      background: var(--Line-color-border-2, #eaedf1);
+      overflow: hidden;
+
+      .refresh {
+        flex-shrink: 0;
+        width: 16px;
+        height: 16px;
+        overflow: hidden;
+      }
+
+      .iconWrapper {
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 0;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px 0px 0px 4px;
+        background: var(--Background-color-bg-1, #ffffff);
+        padding: 8px;
+        width: 28px;
+        height: 28px;
+        overflow: hidden;
+
+        .download {
+          flex-shrink: 0;
+          width: 16px;
+          height: 16px;
+        }
+      }
+
+      .iconWrapper2 {
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 0;
+        align-items: center;
+        justify-content: center;
+        background: var(--Background-color-bg-1, #ffffff);
+        padding: 8px;
+        width: 28px;
+        height: 28px;
+        overflow: hidden;
+      }
+
+      .iconWrapper3 {
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 0;
+        align-items: center;
+        justify-content: center;
+        border-radius: 0px 4px 4px 0px;
+        background: var(--Background-color-bg-1, #ffffff);
+        padding: 8px;
+        width: 28px;
+        height: 28px;
+        overflow: hidden;
+      }
+    }
+  }
+
+  .frame1912056450 {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    align-items: flex-start;
+    align-self: stretch;
+    padding: 16px;
+    row-gap: 8px;
+
+    .legendName {
+      display: -webkit-box;
+      flex-grow: 1;
+      overflow: hidden;
+      line-height: 20px;
+      letter-spacing: 0.04px;
+      color: var(--Text-color-text-3, #737a87);
+      font-family: Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
+      font-size: 12px;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+    }
+
+    .frame2 {
+      display: flex;
+      flex-shrink: 0;
+      align-items: center;
+      padding: 4px;
+
+      .rectangleCopy80 {
+        border-radius: 2px;
+        background: var(--01-Blue, #1664ff);
+        width: 10px;
+        height: 10px;
+      }
+    }
+
+    .instance4 {
+      display: flex;
+      flex-grow: 1;
+      align-items: flex-start;
+      align-self: stretch;
+      column-gap: 4px;
+      z-index: 2;
+      background: #ffffff;
+
+      .a1000 {
+        flex-shrink: 0;
+        line-height: 18px;
+        letter-spacing: 0.03px;
+        color: var(--Text-color-text-3, #737a87);
+        font-family: Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
+        font-size: 10px;
+      }
+
+      .instance {
+        display: inline-flex;
+        flex-direction: column;
+        flex-shrink: 0;
+        align-items: flex-start;
+        align-self: stretch;
+        justify-content: space-between;
+        padding-bottom: 13px;
+
+        .yAixValueLabel {
+          display: flex;
+          flex-shrink: 0;
+          align-items: center;
+          align-self: stretch;
+          justify-content: flex-end;
+          column-gap: 2px;
+        }
+      }
+
+      .frame1912056411 {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        align-items: flex-start;
+        align-self: stretch;
+        justify-content: space-between;
+
+        .grid {
+          display: flex;
+          flex-grow: 1;
+          align-items: flex-start;
+          align-self: stretch;
+          z-index: 2;
+
+          .frame1912056443 {
+            position: relative;
+            width: 483px;
+            height: 162px;
+
+            .frame {
+              position: absolute;
+              top: 16px;
+              left: 0;
+              width: 483px;
+              height: 130px;
+            }
+
+            .aComponentTooltip {
+              display: flex;
+              position: absolute;
+              top: 0;
+              left: 223px;
+              align-items: center;
+              justify-content: space-between;
+              padding-right: 90px;
+              width: 331px;
+              height: 162px;
+
+              .hoverline {
+                width: 13px;
+                height: 162px;
+              }
+
+              .tooltipContainer {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                justify-content: center;
+                padding-top: 8px;
+                padding-bottom: 8px;
+                width: 225px;
+                height: 57px;
+                row-gap: 8px;
+
+                .aTooltip {
+                  display: flex;
+                  flex-direction: column;
+                  flex-shrink: 0;
+                  align-items: flex-start;
+                  outline-width: 1px;
+                  outline-style: solid;
+                  outline-color: var(--Line-color-border-2, #eaedf1);
+                  border-radius: 4px;
+                  box-shadow: var(
+                    --shadow-Card-2-dropdown-pop,
+                    0px 15px 35px -2px #0000000d,
+                    0px 5px 15px 0px #0000000d
+                  );
+                  background: #ffffffe5;
+                  width: 250px;
+                  overflow: hidden;
+
+                  .aTooltipToolTipVaule {
+                    display: flex;
+                    flex-direction: column;
+                    flex-shrink: 0;
+                    align-items: flex-start;
+                    align-self: stretch;
+                    justify-content: center;
+                    margin-right: -79px;
+                    border-width: 0px 0px 1px;
+                    border-style: solid;
+                    border-color: var(--Line-color-border-2, #eaedf1);
+                    background: #fffffff2;
+                    padding: 8px 12px;
+                    row-gap: 4px;
+
+                    .text2 {
+                      flex-shrink: 0;
+                      line-height: 20px;
+                      letter-spacing: 0.04px;
+                      color: var(--Text-color-text-3, #737a87);
+                      font-family: Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
+                      font-size: 12px;
+                    }
+
+                    .frame1912056346 {
+                      display: flex;
+                      flex-shrink: 0;
+                      align-items: flex-start;
+                      align-self: stretch;
+
+                      .instance2 {
+                        display: flex;
+                        flex-grow: 1;
+                        align-items: center;
+                        padding-right: 4px;
+                      }
+
+                      .legendvalue {
+                        flex-shrink: 0;
+                        padding: 0px 12px;
+                        overflow: hidden;
+                        line-height: 20px;
+                        letter-spacing: 0;
+                        color: var(--Text-color-text-2, #42464e);
+                        font-family: Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
+                        font-size: 12px;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+
+            .gridLine1 {
+              position: absolute;
+              top: 0;
+              left: 0;
+              width: 483px;
+              height: 32px;
+            }
+
+            .gridLine2 {
+              position: absolute;
+              top: 32px;
+              left: 0;
+              width: 483px;
+              height: 32px;
+            }
+
+            .gridLine3 {
+              position: absolute;
+              top: 64px;
+              left: 0;
+              width: 483px;
+              height: 32px;
+            }
+
+            .gridLine4 {
+              position: absolute;
+              top: 95px;
+              left: 0;
+              width: 483px;
+              height: 32px;
+            }
+
+            .gridLine5 {
+              position: absolute;
+              top: 127px;
+              left: 0;
+              width: 483px;
+              height: 32px;
+            }
+          }
+        }
+
+        .instance3 {
+          display: flex;
+          flex-shrink: 0;
+          align-items: flex-start;
+          align-self: stretch;
+          z-index: 1;
+          padding-top: 4px;
+          padding-bottom: 4px;
+
+          .frame1912056272 {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            align-items: center;
+            align-self: stretch;
+            border-width: 1px 0px 0px;
+            border-style: solid;
+            border-color: var(--Text-color-text-3, #737a87);
+            row-gap: 2px;
+
+            .rectangle1322 {
+              flex-shrink: 0;
+              background: var(--Text-color-text-3, #737a87);
+              width: 1px;
+              height: 4px;
+            }
+          }
+        }
+      }
+    }
+
+    .instance5 {
+      display: flex;
+      flex-shrink: 0;
+      align-items: center;
+      z-index: 1;
+      padding-right: 300px;
+      width: 526px;
+    }
+  }
+}
