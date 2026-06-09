@@ -39,7 +39,7 @@ jobs:
       - name: Build site
         env:
           VITE_BASE_PATH: /babi-charts/
-        run: npm run build
+        run: node ./node_modules/vite/bin/vite.js build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
