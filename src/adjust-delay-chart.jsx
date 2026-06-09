@@ -17,7 +17,7 @@ import "./chart-tooltip.css";
 
 function App() {
   return (
-    <SingleChartPage checkItem="最早账期调账" title="调账平均滞后时长趋势图">
+    <SingleChartPage checkItem="近半年调账发起及时性" title="调账平均滞后时长趋势图">
       <LineChart
         data={adjustDelayData}
         xField="month"

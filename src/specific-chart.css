@@ -271,7 +271,7 @@ code {
 }
 
 .adjustment-tooltip__value {
-  color: #1d2129;
+  color: #676b72;
   font-size: 12px;
   line-height: 18px;
   font-weight: 400;
@@ -281,6 +281,7 @@ code {
 }
 
 .adjustment-tooltip__value--active {
+  color: var(--text-color-text-1, #0c0d0e);
   font-weight: 500;
 }
 

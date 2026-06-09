@@ -18,8 +18,8 @@ export const countData = pushVolumeTrendData.flatMap((item) => [
 ]);
 
 export const ratioData = pushVolumeTrendData.flatMap((item) => [
-  { month: item.month, series: "日结计费项占比", value: item.dailyRatio },
-  { month: item.month, series: "月结计费项占比", value: item.monthlyRatio },
+  { month: item.month, series: "日结计费项不达标占比", value: item.dailyRatio },
+  { month: item.month, series: "月结计费项不达标占比", value: item.monthlyRatio },
 ]);
 
 export const adjustDelayData = [
@@ -51,17 +51,17 @@ export const unhandledAmountTrendData = [
 
 export const costProfitMarginTrendData = [
   { month: "2025-12", region: "中国区", costProfitMargin: 4 },
-  { month: "2025-12", region: "其他大区", costProfitMargin: -2 },
+  { month: "2025-12", region: "非中区", costProfitMargin: -2 },
   { month: "2026-01", region: "中国区", costProfitMargin: 6 },
-  { month: "2026-01", region: "其他大区", costProfitMargin: -1 },
+  { month: "2026-01", region: "非中区", costProfitMargin: -1 },
   { month: "2026-02", region: "中国区", costProfitMargin: 3 },
-  { month: "2026-02", region: "其他大区", costProfitMargin: -3 },
+  { month: "2026-02", region: "非中区", costProfitMargin: -3 },
   { month: "2026-03", region: "中国区", costProfitMargin: 8 },
-  { month: "2026-03", region: "其他大区", costProfitMargin: 1 },
+  { month: "2026-03", region: "非中区", costProfitMargin: 1 },
   { month: "2026-04", region: "中国区", costProfitMargin: 7 },
-  { month: "2026-04", region: "其他大区", costProfitMargin: 0 },
+  { month: "2026-04", region: "非中区", costProfitMargin: 0 },
   { month: "2026-05", region: "中国区", costProfitMargin: 9 },
-  { month: "2026-05", region: "其他大区", costProfitMargin: 2 },
+  { month: "2026-05", region: "非中区", costProfitMargin: 2 },
 ];
 
 const backtrackAmountRatioTrendData = [

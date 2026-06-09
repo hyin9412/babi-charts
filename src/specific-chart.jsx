@@ -21,7 +21,6 @@ import {
   adjustmentAmountData,
   adjustmentCostRevenueData,
   adjustmentCostRevenueLineSeries,
-  adjustmentCostRevenueSeries,
   adjustmentCountData,
   backtrackCountData,
   backtrackRatioData,
@@ -122,78 +121,11 @@ function buildAdjustmentCostRevenueTooltip(params, activeRegionKey, selectedRegi
 }
 
 function App() {
-  const adjustmentHoverResetFrameRef = useRef(null);
-  const activeAdjustmentRegionRef = useRef(null);
-  const [activeAdjustmentRegion, setActiveAdjustmentRegion] = useState(null);
-  const [adjustmentLegendSelected, setAdjustmentLegendSelected] = useState(
-    createAllSelectedRegionMap
-  );
   const adjustmentLineHoverResetFrameRef = useRef(null);
   const activeAdjustmentLineRegionRef = useRef(null);
   const [activeAdjustmentLineRegion, setActiveAdjustmentLineRegion] = useState(null);
   const [adjustmentLineLegendSelected, setAdjustmentLineLegendSelected] = useState(
     createAllSelectedRegionMap
-  );
-
-  const clearPendingAdjustmentReset = useCallback(() => {
-    if (adjustmentHoverResetFrameRef.current != null) {
-      cancelAnimationFrame(adjustmentHoverResetFrameRef.current);
-      adjustmentHoverResetFrameRef.current = null;
-    }
-  }, []);
-
-  const highlightAdjustmentRegion = useCallback(
-    (regionKey) => {
-      clearPendingAdjustmentReset();
-
-      if (activeAdjustmentRegionRef.current === regionKey) {
-        return;
-      }
-
-      activeAdjustmentRegionRef.current = regionKey;
-      setActiveAdjustmentRegion(regionKey);
-    },
-    [clearPendingAdjustmentReset]
-  );
-
-  const resetAdjustmentHighlight = useCallback(() => {
-    clearPendingAdjustmentReset();
-    activeAdjustmentRegionRef.current = null;
-    setActiveAdjustmentRegion(null);
-  }, [clearPendingAdjustmentReset]);
-
-  const scheduleAdjustmentHighlightReset = useCallback(() => {
-    clearPendingAdjustmentReset();
-    adjustmentHoverResetFrameRef.current = requestAnimationFrame(() => {
-      adjustmentHoverResetFrameRef.current = null;
-      resetAdjustmentHighlight();
-    });
-  }, [clearPendingAdjustmentReset, resetAdjustmentHighlight]);
-
-  const handleAdjustmentChartMouseOver = useCallback(
-    (params) => {
-      if (params?.componentType !== "series") {
-        return;
-      }
-
-      const regionKey = adjustmentRegionBySeriesName.get(params.seriesName);
-
-      if (!regionKey) {
-        return;
-      }
-
-      highlightAdjustmentRegion(regionKey);
-    },
-    [highlightAdjustmentRegion]
-  );
-
-  const adjustmentChartEvents = useMemo(
-    () => ({
-      mouseover: handleAdjustmentChartMouseOver,
-      mouseout: scheduleAdjustmentHighlightReset,
-      globalout: resetAdjustmentHighlight,
-    }),
-    [handleAdjustmentChartMouseOver, resetAdjustmentHighlight, scheduleAdjustmentHighlightReset]
   );
 
   const clearPendingAdjustmentLineReset = useCallback(() => {
@@ -275,13 +207,13 @@ function App() {
               { id: "ratioData", values: ratioData },
             ]}
             xField="month"
-            lineFields={{
+            barFields={{
               dataId: "countData",
               yField: "value",
               seriesField: "series",
             }}
             dualAxis={{
-              bar: {
+              line: {
                 dataId: "ratioData",
                 yField: "value",
                 seriesField: "series",
@@ -308,16 +240,17 @@ function App() {
             tooltipProps={createSeriesUnitTooltipProps({
               日结计费项不达标个数: "个",
               月结计费项不达标个数: "个",
-              日结计费项占比: "%",
-              月结计费项占比: "%",
+              日结计费项不达标占比: "%",
+              月结计费项不达标占比: "%",
             })}
+            lineChartProps={emphasizedLineProps}
             chartProps={createChartPadding(0)}
             legendProps={bottomLegendLeftAlignedProps}
             chartComponentProps={fullSizeChartComponentProps}
           />
         </ChartCard>
 
-        <ChartCard checkItem="最早账期调账" title="调账平均滞后时长趋势图">
+        <ChartCard checkItem="近半年调账发起及时性" title="调账平均滞后时长趋势图">
           <LineChart
             data={adjustDelayData}
             xField="month"
@@ -338,104 +271,6 @@ function App() {
             legendProps={bottomLegendLeftAlignedProps}
             chartComponentProps={fullSizeChartComponentProps}
           />
-        </ChartCard>
-
-        <ChartCard
-          checkItem="有成本无收入或有收入无成本"
-          checkItemTags={["堆叠图"]}
-          checkItemRemark="（用源力图表实现）"
-          title="成本和收入趋势图"
-          titleTags={["日正式+月正式", "纯资源金额"]}
-          workspaceClassName="workspace workspace--tooltip-visible"
-          panelClassName="chart-panel chart-panel--stacked"
-        >
-          <div className="stacked-chart">
-            <CChart
-              type="histogram"
-              canvasHeight={214}
-              data={adjustmentCostRevenueData}
-              onEvents={adjustmentChartEvents}
-              xField="month"
-              yField={adjustmentCostRevenueSeries}
-              yAxisLabelFormatter={(value) => `${value}万`}
-              behavior={{
-                barWidth: 14,
-                barGap: "20%",
-                barCategoryGap: "42%",
-                showXMinLabel: true,
-                showXMaxLabel: true,
-                xLabelMargin: 10,
-              }}
-              advancedOptions={{
-                CLegend: {
-                  className: "adjustment-clegend-left",
-                  data: regionLegendItems.map((item) => ({
-                    name: item.name,
-                    color: item.color,
-                  })),
-                  icon: "roundRect",
-                  initSelected: adjustmentLegendSelected,
-                  onSelect: (selected) => {
-                    setAdjustmentLegendSelected(selected || createAllSelectedRegionMap());
-                  },
-                  operation: {
-                    hasClickOnlySelected: true,
-                  },
-                  position: "bottom",
-                  show: true,
-                },
-              }}
-              raw={(config) => ({
-                ...config,
-                series: (config.series || []).map((series) => ({
-                  ...series,
-                  itemStyle: {
-                    ...(series.itemStyle || {}),
-                    opacity: (() => {
-                      const regionKey = adjustmentRegionBySeriesName.get(series.name);
-
-                      if (!isRegionSelected(adjustmentLegendSelected, regionKey)) {
-                        return 0;
-                      }
-
-                      return !activeAdjustmentRegion || regionKey === activeAdjustmentRegion
-                        ? 1
-                        : 0.1;
-                    })(),
-                  },
-                })),
-                yAxis: {
-                  ...(config.yAxis || {}),
-                  min: 0,
-                  max: 80,
-                  splitNumber: 5,
-                },
-                tooltip: {
-                  trigger: "axis",
-                  confine: false,
-                  backgroundColor: "rgba(255,255,255,0.96)",
-                  borderWidth: 0,
-                  padding: 0,
-                  className: "adjustment-tooltip-layer",
-                  formatter: (params) =>
-                    buildAdjustmentCostRevenueTooltip(
-                      params,
-                      activeAdjustmentRegionRef.current,
-                      adjustmentLegendSelected
-                    ),
-                },
-                grid: {
-                  ...(config.grid || {}),
-                  top: 16,
-                  left: 0,
-                  right: 8,
-                  bottom: 0,
-                  containLabel: true,
-                },
-              })}
-              style={fullSizeChartComponentProps.style}
-            />
-          </div>
         </ChartCard>
 
         <ChartCard
