@@ -18,12 +18,14 @@ import {
 } from "./chart-presets";
 import {
   adjustDelayData,
-  adjustmentAmountData,
   adjustmentCostRevenueData,
   adjustmentCostRevenueLineSeries,
-  adjustmentCountData,
-  backtrackCountData,
-  backtrackRatioData,
+  adjustmentIssueTrendData,
+  adjustmentTrendLegendItems,
+  adjustmentTrendLineSeries,
+  backtrackAmountRatioTrendData,
+  backtrackTrendLegendItems,
+  backtrackTrendLineSeries,
   costProfitMarginTrendData,
   countData,
   priceAdjustCountTrendData,
@@ -42,11 +44,41 @@ import "./chart-tooltip.css";
 initializeSpecificChartRuntime();
 
 const adjustmentTooltipRegions = [
-  { key: "中国", costSeries: "成本-中国", revenueSeries: "收入-中国" },
-  { key: "海外其他", costSeries: "成本-海外其他", revenueSeries: "收入-海外其他" },
-  { key: "美国", costSeries: "成本-美国", revenueSeries: "收入-美国" },
-  { key: "美国TTP", costSeries: "成本-美国TTP", revenueSeries: "收入-美国TTP" },
-  { key: "欧洲TTP", costSeries: "成本-欧洲TTP", revenueSeries: "收入-欧洲TTP" },
+  {
+    key: "中国",
+    costSeries: "成本-中国",
+    revenueSeries: "收入-中国",
+    costField: "costChina",
+    revenueField: "revenueChina",
+  },
+  {
+    key: "海外其他",
+    costSeries: "成本-海外其他",
+    revenueSeries: "收入-海外其他",
+    costField: "costOverseasOther",
+    revenueField: "revenueOverseasOther",
+  },
+  {
+    key: "美国",
+    costSeries: "成本-美国",
+    revenueSeries: "收入-美国",
+    costField: "costUS",
+    revenueField: "revenueUS",
+  },
+  {
+    key: "美国TTP",
+    costSeries: "成本-美国TTP",
+    revenueSeries: "收入-美国TTP",
+    costField: "costUSTTP",
+    revenueField: "revenueUSTTP",
+  },
+  {
+    key: "欧洲TTP",
+    costSeries: "成本-欧洲TTP",
+    revenueSeries: "收入-欧洲TTP",
+    costField: "costEuropeTTP",
+    revenueField: "revenueEuropeTTP",
+  },
 ];
 
 const adjustmentRegionBySeriesName = new Map(
@@ -56,8 +88,15 @@ const adjustmentRegionBySeriesName = new Map(
   ])
 );
 
-const createAllSelectedRegionMap = () =>
-  Object.fromEntries(adjustmentTooltipRegions.map((region) => [region.key, true]));
+const createZeroValueRegionSelectedMap = () =>
+  Object.fromEntries(
+    adjustmentTooltipRegions.map((region) => [
+      region.key,
+      adjustmentCostRevenueData.some(
+        (item) => item[region.costField] === 0 || item[region.revenueField] === 0
+      ),
+    ])
+  );
 
 function isRegionSelected(selectedRegions, regionKey) {
   return selectedRegions?.[regionKey] !== false;
@@ -65,6 +104,42 @@ function isRegionSelected(selectedRegions, regionKey) {
 
 function formatTooltipValue(value) {
   return value == null || value === "-" ? "-" : `${value}元`;
+}
+
+function formatUnitValue(value, unit) {
+  if (value == null || value === "-") {
+    return "-";
+  }
+
+  return `${value}${unit}`;
+}
+
+function buildSimpleTrendTooltip(params, unitBySeries) {
+  const tooltipParams = Array.isArray(params) ? params : [params];
+  const month = tooltipParams[0]?.axisValueLabel || tooltipParams[0]?.name || "-";
+  const rowsHtml = tooltipParams
+    .map((item) => {
+      const value = Array.isArray(item.value) ? item.value[item.encode?.y?.[0] ?? 1] : item.value;
+      const unit = unitBySeries[item.seriesName] ?? "";
+
+      return `
+        <div class="adjustment-tooltip__row adjustment-tooltip__row--simple">
+          <div class="adjustment-tooltip__region">
+            <span class="adjustment-tooltip__dot" style="background:${item.color};"></span>
+            <span>${item.seriesName}</span>
+          </div>
+          <div class="adjustment-tooltip__value">${formatUnitValue(value, unit)}</div>
+        </div>
+      `;
+    })
+    .join("");
+
+  return `
+    <div class="adjustment-tooltip adjustment-tooltip--simple">
+      <div class="adjustment-tooltip__title">${month}</div>
+      ${rowsHtml}
+    </div>
+  `;
 }
 
 function buildAdjustmentCostRevenueTooltip(params, activeRegionKey, selectedRegions) {
@@ -125,7 +200,7 @@ function App() {
   const activeAdjustmentLineRegionRef = useRef(null);
   const [activeAdjustmentLineRegion, setActiveAdjustmentLineRegion] = useState(null);
   const [adjustmentLineLegendSelected, setAdjustmentLineLegendSelected] = useState(
-    createAllSelectedRegionMap
+    createZeroValueRegionSelectedMap
   );
 
   const clearPendingAdjustmentLineReset = useCallback(() => {
@@ -309,7 +384,7 @@ function App() {
                   icon: "roundRect",
                   initSelected: adjustmentLineLegendSelected,
                   onSelect: (selected) => {
-                    setAdjustmentLineLegendSelected(selected || createAllSelectedRegionMap());
+                    setAdjustmentLineLegendSelected(selected || createZeroValueRegionSelectedMap());
                   },
                   operation: {
                     hasClickOnlySelected: true,
@@ -391,102 +466,190 @@ function App() {
           checkItem="计量问题导致的调账"
           title="计量问题导致调账的趋势图"
           titleTags={["总金额"]}
+          status="charts-common · 双轴折线"
         >
-          <LineBarCombo
-            data={[
-              { id: "adjustmentCountData", values: adjustmentCountData },
-              { id: "adjustmentAmountData", values: adjustmentAmountData },
-            ]}
+          <CChart
+            type="mix"
+            canvasHeight={214}
+            data={adjustmentIssueTrendData}
             xField="month"
-            lineFields={{
-              dataId: "adjustmentCountData",
-              yField: "value",
-              seriesField: "series",
+            yField={{
+              lines: [adjustmentTrendLineSeries[0]],
+              axisLabelFormatter: (value) => `${value}次`,
             }}
-            dualAxis={{
-              line: {
-                dataId: "adjustmentAmountData",
-                yField: "value",
-                seriesField: "series",
+            rightYField={{
+              lines: [adjustmentTrendLineSeries[1]],
+              axisLabelFormatter: (value) => `${value}万`,
+            }}
+            behavior={{
+              useStandardStyle: true,
+              smooth: true,
+              showXMinLabel: true,
+              showXMaxLabel: true,
+              xAxisOffset: true,
+              xLabelMargin: 10,
+            }}
+            advancedOptions={{
+              CLegend: {
+                className: "adjustment-clegend-left",
+                data: adjustmentTrendLegendItems,
+                icon: "roundRect",
+                position: "bottom",
+                show: true,
               },
             }}
-            leftYFormatMethod={(value) => `${value}次`}
-            rightYFormatMethod={(value) => `${Math.round(Number(value))}万`}
-            xAxisProps={commonXAxisProps}
-            leftYAxisProps={{
-              min: 0,
-              max: 20,
-              tick: {
-                tickCount: 5,
+            raw={(config) => ({
+              ...config,
+              yAxis: [
+                {
+                  ...(Array.isArray(config.yAxis) ? config.yAxis[0] : config.yAxis),
+                  min: 0,
+                  max: 20,
+                  splitNumber: 4,
+                  axisLabel: {
+                    formatter: (value) => `${value}次`,
+                  },
+                  splitLine: {
+                    show: true,
+                    lineStyle: {
+                      type: "dashed",
+                      color: "#D9DDE5",
+                    },
+                  },
+                },
+                {
+                  ...(Array.isArray(config.yAxis) ? config.yAxis[1] : {}),
+                  type: "value",
+                  position: "right",
+                  min: 0,
+                  max: 40,
+                  splitNumber: 4,
+                  axisLabel: {
+                    formatter: (value) => `${value}万`,
+                  },
+                  splitLine: {
+                    show: false,
+                  },
+                },
+              ],
+              tooltip: {
+                trigger: "axis",
+                confine: false,
+                backgroundColor: "rgba(255,255,255,0.96)",
+                borderWidth: 0,
+                padding: 0,
+                className: "adjustment-tooltip-layer",
+                formatter: (params) =>
+                  buildSimpleTrendTooltip(params, {
+                    调账次数: "次",
+                    调账金额: "万",
+                  }),
               },
-            }}
-            rightYAxisProps={{
-              min: 0,
-              max: 40,
-              tick: {
-                tickCount: 6,
+              grid: {
+                ...(config.grid || {}),
+                top: 16,
+                left: 0,
+                right: 8,
+                bottom: 0,
+                containLabel: true,
               },
-              ...hiddenGridProps,
-            }}
-            tooltipProps={createSeriesUnitTooltipProps({
-              调账次数: "次",
-              调账金额: "万",
             })}
-            chartProps={createChartPadding()}
-            legendProps={bottomLegendLeftAlignedProps}
-            chartComponentProps={fullSizeChartComponentProps}
+            style={fullSizeChartComponentProps.style}
           />
         </ChartCard>
 
         <ChartCard
           checkItem="回溯金额占比"
           title="回溯金额占比趋势图"
-          status="babi-design · 双轴折线"
+          status="charts-common · 双轴折线"
         >
-          <LineBarCombo
-            data={[
-              { id: "backtrackCountData", values: backtrackCountData },
-              { id: "backtrackRatioData", values: backtrackRatioData },
-            ]}
+          <CChart
+            type="mix"
+            canvasHeight={214}
+            data={backtrackAmountRatioTrendData}
             xField="month"
-            lineFields={{
-              dataId: "backtrackCountData",
-              yField: "value",
-              seriesField: "series",
+            yField={{
+              lines: [backtrackTrendLineSeries[0]],
+              axisLabelFormatter: (value) => `${value}%`,
             }}
-            dualAxis={{
-              line: {
-                dataId: "backtrackRatioData",
-                yField: "value",
-                seriesField: "series",
+            rightYField={{
+              lines: [backtrackTrendLineSeries[1]],
+              axisLabelFormatter: (value) => `${value}次`,
+            }}
+            behavior={{
+              useStandardStyle: true,
+              smooth: true,
+              showXMinLabel: true,
+              showXMaxLabel: true,
+              xAxisOffset: true,
+              xLabelMargin: 10,
+            }}
+            advancedOptions={{
+              CLegend: {
+                className: "adjustment-clegend-left",
+                data: backtrackTrendLegendItems,
+                icon: "roundRect",
+                position: "bottom",
+                show: true,
               },
             }}
-            leftYFormatMethod={(value) => `${value}次`}
-            rightYFormatMethod={(value) => `${value}%`}
-            xAxisProps={commonXAxisProps}
-            leftYAxisProps={{
-              min: 0,
-              max: 120,
-              tick: {
-                forceTickCount: 5,
+            raw={(config) => ({
+              ...config,
+              yAxis: [
+                {
+                  ...(Array.isArray(config.yAxis) ? config.yAxis[0] : config.yAxis),
+                  min: 0,
+                  max: 12,
+                  splitNumber: 4,
+                  axisLabel: {
+                    formatter: (value) => `${value}%`,
+                  },
+                  splitLine: {
+                    show: true,
+                    lineStyle: {
+                      type: "dashed",
+                      color: "#D9DDE5",
+                    },
+                  },
+                },
+                {
+                  ...(Array.isArray(config.yAxis) ? config.yAxis[1] : {}),
+                  type: "value",
+                  position: "right",
+                  min: 0,
+                  max: 120,
+                  splitNumber: 4,
+                  axisLabel: {
+                    formatter: (value) => `${value}次`,
+                  },
+                  splitLine: {
+                    show: false,
+                  },
+                },
+              ],
+              tooltip: {
+                trigger: "axis",
+                confine: false,
+                backgroundColor: "rgba(255,255,255,0.96)",
+                borderWidth: 0,
+                padding: 0,
+                className: "adjustment-tooltip-layer",
+                formatter: (params) =>
+                  buildSimpleTrendTooltip(params, {
+                    回溯占比: "%",
+                    回溯次数: "次",
+                  }),
               },
-            }}
-            rightYAxisProps={{
-              min: 0,
-              max: 12,
-              tick: {
-                forceTickCount: 5,
+              grid: {
+                ...(config.grid || {}),
+                top: 16,
+                left: 0,
+                right: 8,
+                bottom: 0,
+                containLabel: true,
               },
-              ...hiddenGridProps,
-            }}
-            tooltipProps={createSeriesUnitTooltipProps({
-              回溯次数: "次",
-              回溯占比: "%",
             })}
-            lineChartProps={emphasizedLineProps}
-            chartProps={createChartPadding()}
-            legendProps={bottomLegendLeftAlignedProps}
-            chartComponentProps={fullSizeChartComponentProps}
+            style={fullSizeChartComponentProps.style}
           />
         </ChartCard>
 

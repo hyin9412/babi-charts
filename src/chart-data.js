@@ -64,7 +64,7 @@ export const costProfitMarginTrendData = [
   { month: "2026-05", region: "非中区", costProfitMargin: 2 },
 ];
 
-const backtrackAmountRatioTrendData = [
+export const backtrackAmountRatioTrendData = [
   { month: "2025-12", backtrackCount: 78, backtrackRatio: 5 },
   { month: "2026-01", backtrackCount: 86, backtrackRatio: 6 },
   { month: "2026-02", backtrackCount: 83, backtrackRatio: 6 },
@@ -85,7 +85,7 @@ export const backtrackRatioData = backtrackAmountRatioTrendData.map((item) => ({
   value: item.backtrackRatio,
 }));
 
-const adjustmentIssueTrendData = [
+export const adjustmentIssueTrendData = [
   { month: "2025-12", adjustCount: 12, adjustAmount: 28.6 },
   { month: "2026-01", adjustCount: 15, adjustAmount: 32.4 },
   { month: "2026-02", adjustCount: 11, adjustAmount: 24.8 },
@@ -104,6 +104,26 @@ export const adjustmentAmountData = adjustmentIssueTrendData.map((item) => ({
   month: item.month,
   series: "调账金额",
   value: item.adjustAmount,
+}));
+
+export const adjustmentTrendLineSeries = [
+  {
+    series: "adjustCount",
+    label: "调账次数",
+    itemStyle: { color: defaultBlue },
+    lineStyle: { color: defaultBlue, type: "solid" },
+  },
+  {
+    series: "adjustAmount",
+    label: "调账金额",
+    itemStyle: { color: defaultCyan },
+    lineStyle: { color: defaultCyan, type: "dashed" },
+  },
+];
+
+export const adjustmentTrendLegendItems = adjustmentTrendLineSeries.map((item) => ({
+  name: item.label,
+  color: item.itemStyle.color,
 }));
 
 const pricingDeviationAdjustTrendData = [
@@ -269,4 +289,24 @@ export const adjustmentCostRevenueLineSeries = adjustmentCostRevenueSeries.map((
     color: item.itemStyle.color,
     type: item.label.startsWith("收入-") ? "dashed" : "solid",
   },
+}));
+
+export const backtrackTrendLineSeries = [
+  {
+    series: "backtrackRatio",
+    label: "回溯占比",
+    itemStyle: { color: defaultBlue },
+    lineStyle: { color: defaultBlue, type: "solid" },
+  },
+  {
+    series: "backtrackCount",
+    label: "回溯次数",
+    itemStyle: { color: defaultCyan },
+    lineStyle: { color: defaultCyan, type: "dashed" },
+  },
+];
+
+export const backtrackTrendLegendItems = backtrackTrendLineSeries.map((item) => ({
+  name: item.label,
+  color: item.itemStyle.color,
 }));

@@ -247,6 +247,14 @@ code {
   font-weight: 400;
 }
 
+.adjustment-tooltip--simple {
+  min-width: 180px;
+}
+
+.adjustment-tooltip__row--simple {
+  grid-template-columns: minmax(96px, 1fr) auto;
+}
+
 .adjustment-tooltip__row + .adjustment-tooltip__row {
   margin-top: 4px;
 }
