@@ -187,12 +187,45 @@ function buildAdjustmentCostRevenueTooltip(params, activeRegionKey, selectedRegi
       <div class="adjustment-tooltip__title">${month}</div>
       <div class="adjustment-tooltip__head">
         <div>大区</div>
-        <div>成本</div>
-        <div>收入</div>
+        <div class="adjustment-tooltip__head-item">
+          <span class="adjustment-tooltip__legend adjustment-tooltip__legend--solid" aria-hidden="true">
+            <span class="adjustment-tooltip__legend-solid-line"></span>
+          </span>
+          <span>成本</span>
+        </div>
+        <div class="adjustment-tooltip__head-item">
+          <span class="adjustment-tooltip__legend adjustment-tooltip__legend--dashed" aria-hidden="true">
+            <span class="adjustment-tooltip__legend-dashed-line"></span>
+            <span class="adjustment-tooltip__legend-dashed-line"></span>
+            <span class="adjustment-tooltip__legend-dashed-line"></span>
+          </span>
+          <span>收入</span>
+        </div>
       </div>
       ${rowsHtml}
     </div>
   `;
+}
+
+function AdjustmentTitleLegend() {
+  return (
+    <div className="title-static-legend" aria-label="成本收入静态图例">
+      <div className="title-static-legend__item">
+        <span className="title-static-legend__icon title-static-legend__icon--cost" aria-hidden="true">
+          <span className="title-static-legend__cost-line" />
+        </span>
+        <span className="title-static-legend__text">成本</span>
+      </div>
+      <div className="title-static-legend__item">
+        <span className="title-static-legend__icon title-static-legend__icon--revenue" aria-hidden="true">
+          <span className="title-static-legend__revenue-line" />
+          <span className="title-static-legend__revenue-line" />
+          <span className="title-static-legend__revenue-line" />
+        </span>
+        <span className="title-static-legend__text">收入</span>
+      </div>
+    </div>
+  );
 }
 
 function App() {
@@ -354,6 +387,7 @@ function App() {
           checkItemRemark="（用源力图表实现）"
           title="成本和收入趋势图"
           titleTags={["日正式+月正式", "纯资源金额"]}
+          toolbarExtra={<AdjustmentTitleLegend />}
           workspaceClassName="workspace workspace--tooltip-visible"
           panelClassName="chart-panel chart-panel--stacked"
         >

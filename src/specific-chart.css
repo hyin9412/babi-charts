@@ -95,7 +95,7 @@ code {
   background: #fff;
   width: 100%;
   max-width: 558px;
-  height: 300px;
+  height: 284px;
   overflow: hidden;
 }
 
@@ -108,7 +108,7 @@ code {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 16px;
+  padding: 16px 16px 0;
 }
 
 .toolbar__title {
@@ -122,9 +122,61 @@ code {
 .toolbar h2 {
   margin: 0;
   color: #0c0d0e;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   line-height: 22px;
+}
+
+.title-static-legend {
+  display: inline-flex;
+  align-items: center;
+  column-gap: 4px;
+  flex: 0 0 auto;
+  width: 102px;
+  height: 20px;
+}
+
+.title-static-legend__item {
+  display: inline-flex;
+  align-items: center;
+  column-gap: 2px;
+  padding-right: 4px;
+}
+
+.title-static-legend__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  padding: 4px;
+}
+
+.title-static-legend__icon--revenue {
+  justify-content: space-between;
+}
+
+.title-static-legend__cost-line {
+  width: 10px;
+  height: 2px;
+  border-radius: 1px;
+  background: #737a87;
+}
+
+.title-static-legend__revenue-line {
+  width: 3px;
+  height: 2px;
+  border-radius: 1px;
+  background: #737a87;
+}
+
+.title-static-legend__text {
+  flex-shrink: 0;
+  color: #737a87;
+  font-size: 12px;
+  line-height: 20px;
+  letter-spacing: 0.04px;
 }
 
 .title-tags {
@@ -238,6 +290,41 @@ code {
   font-size: 12px;
   line-height: 18px;
   font-weight: 500;
+}
+
+.adjustment-tooltip__head-item {
+  display: inline-flex;
+  align-items: center;
+  justify-self: end;
+  gap: 2px;
+}
+
+.adjustment-tooltip__legend {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  padding: 4px;
+}
+
+.adjustment-tooltip__legend--dashed {
+  justify-content: space-between;
+}
+
+.adjustment-tooltip__legend-solid-line {
+  width: 10px;
+  height: 2px;
+  border-radius: 1px;
+  background: #737a87;
+}
+
+.adjustment-tooltip__legend-dashed-line {
+  width: 3px;
+  height: 2px;
+  border-radius: 1px;
+  background: #737a87;
 }
 
 .adjustment-tooltip__row {

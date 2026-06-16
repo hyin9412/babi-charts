@@ -4,6 +4,7 @@ export function ChartCard({
   checkItemRemark,
   title,
   titleTags,
+  toolbarExtra,
   status,
   ariaLabel = title,
   workspaceClassName = "workspace",
@@ -41,6 +42,7 @@ export function ChartCard({
               </div>
             ) : null}
           </div>
+          {toolbarExtra}
           {status ? <span className="status">{status}</span> : null}
         </div>
         <div className={panelClassName} aria-label={ariaLabel}>
