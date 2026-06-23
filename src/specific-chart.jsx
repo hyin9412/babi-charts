@@ -1,6 +1,6 @@
 import { LineBarCombo, LineChart } from "@byted-babi/babi-design/es/Chart";
 import { CChart } from "@cloud-materials/charts-common";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { Component, useCallback, useMemo, useRef, useState } from "react";
 import "@arco-design/theme-ve-o-design/css/arco.css";
 import "@tod-m/materials/es/style/index.css";
 import {
@@ -15,6 +15,7 @@ import {
   integerCountLineProps,
   adjustDelayYAxisTicks,
   priceAdjustCountYAxisTicks,
+  staticBottomLegendLeftAlignedProps,
 } from "./chart-presets";
 import {
   adjustDelayData,
@@ -42,6 +43,21 @@ import "./specific-chart.css";
 import "./chart-tooltip.css";
 
 initializeSpecificChartRuntime();
+
+function DashedLegendIcon({ color }) {
+  return <span className="custom-dashed-legend-icon" style={{ "--legend-dash-color": color }} />;
+}
+
+function createDashedLegendItems(items, dashedName, dashedColor) {
+  return items.map((item) =>
+    item.name === dashedName
+      ? {
+          ...item,
+          icon: <DashedLegendIcon color={dashedColor} />,
+        }
+      : item
+  );
+}
 
 const adjustmentTooltipRegions = [
   {
@@ -228,12 +244,57 @@ function AdjustmentTitleLegend() {
   );
 }
 
+class ChartErrorBoundary extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch() {}
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="chart-error-fallback" role="alert">
+          图表渲染失败：{this.props.chartName}
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
 function App() {
   const adjustmentLineHoverResetFrameRef = useRef(null);
   const activeAdjustmentLineRegionRef = useRef(null);
   const [activeAdjustmentLineRegion, setActiveAdjustmentLineRegion] = useState(null);
   const [adjustmentLineLegendSelected, setAdjustmentLineLegendSelected] = useState(
     createZeroValueRegionSelectedMap
+  );
+
+  const adjustmentTrendLegendItemsWithDashedIcon = useMemo(
+    () =>
+      createDashedLegendItems(
+        adjustmentTrendLegendItems,
+        "调账金额",
+        adjustmentTrendLineSeries[1]?.itemStyle?.color
+      ),
+    []
+  );
+
+  const backtrackTrendLegendItemsWithDashedIcon = useMemo(
+    () =>
+      createDashedLegendItems(
+        backtrackTrendLegendItems,
+        "回溯次数",
+        backtrackTrendLineSeries[1]?.itemStyle?.color
+      ),
+    []
   );
 
   const clearPendingAdjustmentLineReset = useCallback(() => {
@@ -309,76 +370,80 @@ function App() {
 
       <main className="page-main">
         <ChartCard checkItem="T+1 推量能力" title="推量不达标计费项的占比趋势图" status="babi-design · 组合图">
-          <LineBarCombo
-            data={[
-              { id: "countData", values: countData },
-              { id: "ratioData", values: ratioData },
-            ]}
-            xField="month"
-            barFields={{
-              dataId: "countData",
-              yField: "value",
-              seriesField: "series",
-            }}
-            dualAxis={{
-              line: {
-                dataId: "ratioData",
+          <ChartErrorBoundary chartName="推量不达标计费项的占比趋势图">
+            <LineBarCombo
+              data={[
+                { id: "countData", values: countData },
+                { id: "ratioData", values: ratioData },
+              ]}
+              xField="month"
+              barFields={{
+                dataId: "countData",
                 yField: "value",
                 seriesField: "series",
-              },
-            }}
-            leftYFormatMethod={(value) => `${value}`}
-            rightYFormatMethod={(value) => `${Math.round(Number(value))}%`}
-            xAxisProps={commonXAxisProps}
-            leftYAxisProps={{
-              min: 0,
-              max: 160,
-              tick: {
-                tickCount: 5,
-              },
-            }}
-            rightYAxisProps={{
-              min: 0,
-              max: 30,
-              tick: {
-                tickCount: 7,
-              },
-              ...hiddenGridProps,
-            }}
-            tooltipProps={createSeriesUnitTooltipProps({
-              日结计费项不达标个数: "个",
-              月结计费项不达标个数: "个",
-              日结计费项不达标占比: "%",
-              月结计费项不达标占比: "%",
-            })}
-            lineChartProps={emphasizedLineProps}
-            chartProps={createChartPadding(0)}
-            legendProps={bottomLegendLeftAlignedProps}
-            chartComponentProps={fullSizeChartComponentProps}
-          />
+              }}
+              dualAxis={{
+                line: {
+                  dataId: "ratioData",
+                  yField: "value",
+                  seriesField: "series",
+                },
+              }}
+              leftYFormatMethod={(value) => `${value}`}
+              rightYFormatMethod={(value) => `${Math.round(Number(value))}%`}
+              xAxisProps={commonXAxisProps}
+              leftYAxisProps={{
+                min: 0,
+                max: 160,
+                tick: {
+                  tickCount: 5,
+                },
+              }}
+              rightYAxisProps={{
+                min: 0,
+                max: 30,
+                tick: {
+                  tickCount: 7,
+                },
+                ...hiddenGridProps,
+              }}
+              tooltipProps={createSeriesUnitTooltipProps({
+                日结计费项不达标个数: "个",
+                月结计费项不达标个数: "个",
+                日结计费项不达标占比: "%",
+                月结计费项不达标占比: "%",
+              })}
+              lineChartProps={emphasizedLineProps}
+              chartProps={createChartPadding(0)}
+              legendProps={bottomLegendLeftAlignedProps}
+              chartComponentProps={fullSizeChartComponentProps}
+            />
+          </ChartErrorBoundary>
         </ChartCard>
 
         <ChartCard checkItem="近半年调账发起及时性" title="调账平均滞后时长趋势图">
-          <LineChart
-            data={adjustDelayData}
-            xField="month"
-            yField="avgDelayDays"
-            seriesField="series"
-            yFormatMethod={(value) => `${value}天`}
-            tooltipValueFn={(_, __, datum) => `${datum?.avgDelayDays ?? "-"}天`}
-            xAxisProps={commonXAxisProps}
-            yAxisProps={{
-              min: 0,
-              max: 8,
-              tick: {
-                tickMode: () => adjustDelayYAxisTicks,
-              },
-            }}
-            lineChartProps={createChartPadding()}
-            lineProps={integerCountLineProps}
-            legendProps={bottomLegendLeftAlignedProps}
-            chartComponentProps={fullSizeChartComponentProps}
-          />
+          <ChartErrorBoundary chartName="调账平均滞后时长趋势图">
+            <LineChart
+              data={adjustDelayData}
+              xField="month"
+              yField="avgDelayDays"
+              seriesField="series"
+              yFormatMethod={(value) => `${value}天`}
+              tooltipValueFn={(_, __, datum) => `${datum?.avgDelayDays ?? "-"}天`}
+              xAxisProps={commonXAxisProps}
+              yAxisProps={{
+                min: 0,
+                max: 8,
+                tick: {
+                  tickMode: () => adjustDelayYAxisTicks,
+                },
+              }}
+              lineChartProps={createChartPadding()}
+              lineProps={integerCountLineProps}
+              legendProps={staticBottomLegendLeftAlignedProps}
+              chartComponentProps={fullSizeChartComponentProps}
+            />
+          </ChartErrorBoundary>
         </ChartCard>
 
         <ChartCard
@@ -526,7 +591,7 @@ function App() {
             advancedOptions={{
               CLegend: {
                 className: "adjustment-clegend-left",
-                data: adjustmentTrendLegendItems,
+                data: adjustmentTrendLegendItemsWithDashedIcon,
                 icon: "roundRect",
                 position: "bottom",
                 show: true,
@@ -621,7 +686,7 @@ function App() {
             advancedOptions={{
               CLegend: {
                 className: "adjustment-clegend-left",
-                data: backtrackTrendLegendItems,
+                data: backtrackTrendLegendItemsWithDashedIcon,
                 icon: "roundRect",
                 position: "bottom",
                 show: true,
@@ -692,119 +757,127 @@ function App() {
           title="异常未处理金额趋势图"
           titleTags={["总金额"]}
         >
-          <LineChart
-            data={unhandledAmountTrendData}
-            xField="month"
-            yField="unhandledAmount"
-            seriesField="series"
-            yFormatMethod={(value) => `${value}万`}
-            tooltipValueFn={(_, __, datum) => `${datum?.unhandledAmount ?? "-"}万`}
-            xAxisProps={commonXAxisProps}
-            yAxisProps={{
-              min: 0,
-              tick: {
-                tickCount: 5,
-              },
-            }}
-            lineChartProps={createChartPadding()}
-            lineProps={defaultLineProps}
-            legendProps={bottomLegendLeftAlignedProps}
-            chartComponentProps={fullSizeChartComponentProps}
-          />
+          <ChartErrorBoundary chartName="异常未处理金额趋势图">
+            <LineChart
+              data={unhandledAmountTrendData}
+              xField="month"
+              yField="unhandledAmount"
+              seriesField="series"
+              yFormatMethod={(value) => `${value}万`}
+              tooltipValueFn={(_, __, datum) => `${datum?.unhandledAmount ?? "-"}万`}
+              xAxisProps={commonXAxisProps}
+              yAxisProps={{
+                min: 0,
+                tick: {
+                  tickCount: 5,
+                },
+              }}
+              lineChartProps={createChartPadding()}
+              lineProps={defaultLineProps}
+              legendProps={staticBottomLegendLeftAlignedProps}
+              chartComponentProps={fullSizeChartComponentProps}
+            />
+          </ChartErrorBoundary>
         </ChartCard>
 
         <ChartCard checkItem="半年周期调价次数" title="调价次数趋势图">
-          <LineChart
-            data={priceAdjustCountTrendData}
-            xField="month"
-            yField="adjustCount"
-            seriesField="series"
-            yFormatMethod={(value) => `${value}次`}
-            tooltipValueFn={(_, __, datum) => `${datum?.adjustCount ?? "-"}次`}
-            xAxisProps={commonXAxisProps}
-            yAxisProps={{
-              min: 0,
-              max: 8,
-              tick: {
-                tickMode: () => priceAdjustCountYAxisTicks,
-              },
-            }}
-            lineChartProps={createChartPadding()}
-            lineProps={defaultLineProps}
-            legendProps={bottomLegendLeftAlignedProps}
-            chartComponentProps={fullSizeChartComponentProps}
-          />
+          <ChartErrorBoundary chartName="调价次数趋势图">
+            <LineChart
+              data={priceAdjustCountTrendData}
+              xField="month"
+              yField="adjustCount"
+              seriesField="series"
+              yFormatMethod={(value) => `${value}次`}
+              tooltipValueFn={(_, __, datum) => `${datum?.adjustCount ?? "-"}次`}
+              xAxisProps={commonXAxisProps}
+              yAxisProps={{
+                min: 0,
+                max: 8,
+                tick: {
+                  tickMode: () => priceAdjustCountYAxisTicks,
+                },
+              }}
+              lineChartProps={createChartPadding()}
+              lineProps={defaultLineProps}
+              legendProps={staticBottomLegendLeftAlignedProps}
+              chartComponentProps={fullSizeChartComponentProps}
+            />
+          </ChartErrorBoundary>
         </ChartCard>
 
         <ChartCard checkItem="成本利润率" title="成本利润率趋势图" status="babi-design · 折线图">
-          <LineChart
-            data={costProfitMarginTrendData}
-            xField="month"
-            yField="costProfitMargin"
-            seriesField="region"
-            yFormatMethod={(value) => `${Math.round(Number(value))}%`}
-            tooltipValueFn={(_, __, datum) => `${Math.round(Number(datum?.costProfitMargin ?? 0))}%`}
-            xAxisProps={commonXAxisProps}
-            yAxisProps={{
-              min: -10,
-              max: 10,
-              tick: {
-                tickCount: 5,
-              },
-            }}
-            lineChartProps={createChartPadding()}
-            lineProps={defaultLineProps}
-            legendProps={bottomLegendLeftAlignedProps}
-            chartComponentProps={fullSizeChartComponentProps}
-          />
+          <ChartErrorBoundary chartName="成本利润率趋势图">
+            <LineChart
+              data={costProfitMarginTrendData}
+              xField="month"
+              yField="costProfitMargin"
+              seriesField="region"
+              yFormatMethod={(value) => `${Math.round(Number(value))}%`}
+              tooltipValueFn={(_, __, datum) => `${Math.round(Number(datum?.costProfitMargin ?? 0))}%`}
+              xAxisProps={commonXAxisProps}
+              yAxisProps={{
+                min: -10,
+                max: 10,
+                tick: {
+                  tickCount: 5,
+                },
+              }}
+              lineChartProps={createChartPadding()}
+              lineProps={defaultLineProps}
+              legendProps={bottomLegendLeftAlignedProps}
+              chartComponentProps={fullSizeChartComponentProps}
+            />
+          </ChartErrorBoundary>
         </ChartCard>
 
         <ChartCard checkItem="定价偏差导致的调账" title="调账次数和金额趋势图">
-          <LineBarCombo
-            data={[
-              { id: "pricingDeviationAdjustCountData", values: pricingDeviationAdjustCountData },
-              { id: "pricingDeviationAdjustAmountData", values: pricingDeviationAdjustAmountData },
-            ]}
-            xField="month"
-            lineFields={{
-              dataId: "pricingDeviationAdjustCountData",
-              yField: "value",
-              seriesField: "series",
-            }}
-            dualAxis={{
-              line: {
-                dataId: "pricingDeviationAdjustAmountData",
+          <ChartErrorBoundary chartName="调账次数和金额趋势图">
+            <LineBarCombo
+              data={[
+                { id: "pricingDeviationAdjustCountData", values: pricingDeviationAdjustCountData },
+                { id: "pricingDeviationAdjustAmountData", values: pricingDeviationAdjustAmountData },
+              ]}
+              xField="month"
+              lineFields={{
+                dataId: "pricingDeviationAdjustCountData",
                 yField: "value",
                 seriesField: "series",
-              },
-            }}
-            leftYFormatMethod={(value) => `${value}次`}
-            rightYFormatMethod={(value) => `${value}万`}
-            xAxisProps={commonXAxisProps}
-            leftYAxisProps={{
-              min: 0,
-              max: 20,
-              tick: {
-                tickCount: 5,
-              },
-            }}
-            rightYAxisProps={{
-              min: 0,
-              max: 45,
-              tick: {
-                tickCount: 5,
-              },
-              ...hiddenGridProps,
-            }}
-            tooltipProps={createSeriesUnitTooltipProps({
-              调账次数: "次",
-              调账金额: "万",
-            })}
-            lineChartProps={emphasizedLineProps}
-            chartProps={createChartPadding()}
-            legendProps={bottomLegendLeftAlignedProps}
-            chartComponentProps={fullSizeChartComponentProps}
-          />
+              }}
+              dualAxis={{
+                line: {
+                  dataId: "pricingDeviationAdjustAmountData",
+                  yField: "value",
+                  seriesField: "series",
+                },
+              }}
+              leftYFormatMethod={(value) => `${value}次`}
+              rightYFormatMethod={(value) => `${value}万`}
+              xAxisProps={commonXAxisProps}
+              leftYAxisProps={{
+                min: 0,
+                max: 20,
+                tick: {
+                  tickCount: 5,
+                },
+              }}
+              rightYAxisProps={{
+                min: 0,
+                max: 45,
+                tick: {
+                  tickCount: 5,
+                },
+                ...hiddenGridProps,
+              }}
+              tooltipProps={createSeriesUnitTooltipProps({
+                调账次数: "次",
+                调账金额: "万",
+              })}
+              lineChartProps={emphasizedLineProps}
+              chartProps={createChartPadding()}
+              legendProps={bottomLegendLeftAlignedProps}
+              chartComponentProps={fullSizeChartComponentProps}
+            />
+          </ChartErrorBoundary>
         </ChartCard>
       </main>
     </>

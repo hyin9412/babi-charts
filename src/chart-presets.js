@@ -8,6 +8,15 @@ export const bottomLegendLeftAlignedProps = {
   },
 };
 
+export const staticBottomLegendLeftAlignedProps = {
+  ...bottomLegendLeftAlignedProps,
+  interactive: false,
+  filter: false,
+  item: {
+    focus: false,
+  },
+};
+
 export const hiddenLegendProps = {
   visible: false,
 };

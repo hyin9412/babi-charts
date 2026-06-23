@@ -236,6 +236,28 @@ code {
   justify-content: flex-start;
 }
 
+.custom-dashed-legend-icon {
+  position: relative;
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+}
+
+.custom-dashed-legend-icon::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 12px;
+  border-top: 2px dashed var(--legend-dash-color, #1ac6ff);
+  transform: translateY(-50%);
+}
+
+.clegend-item-unselect .custom-dashed-legend-icon::after {
+  border-top-color: #e6e8ee;
+}
+
 .region-legend {
   display: flex;
   flex-wrap: wrap;
