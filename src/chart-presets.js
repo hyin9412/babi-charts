@@ -1,3 +1,11 @@
+const squareLegendItemProps = {
+  shape: {
+    style: {
+      symbolType: "square",
+    },
+  },
+};
+
 export const bottomLegendLeftAlignedProps = {
   orient: "bottom",
   position: "start",
@@ -6,6 +14,7 @@ export const bottomLegendLeftAlignedProps = {
     top: 8,
     bottom: 0,
   },
+  item: squareLegendItemProps,
 };
 
 export const staticBottomLegendLeftAlignedProps = {
@@ -13,6 +22,7 @@ export const staticBottomLegendLeftAlignedProps = {
   interactive: false,
   filter: false,
   item: {
+    ...squareLegendItemProps,
     focus: false,
   },
 };
